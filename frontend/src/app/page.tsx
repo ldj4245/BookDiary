@@ -8,6 +8,7 @@ import {
   ArrowRight,
   BookOpenCheck,
   CalendarDays,
+  BarChart2,
   LibraryBig,
   NotebookPen,
   Target,
@@ -19,7 +20,6 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis,
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { ReadingHeatmap } from "@/components/stats/ReadingHeatmap";
@@ -319,33 +319,45 @@ function TodayDashboard() {
       </section>
 
       <section className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-6 shadow-lg shadow-primary/5 animate-fade-slide-up delay-400">
-        <div className="mb-6 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-bold flex items-center gap-2.5">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <BarChart className="size-4" />
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <h2 className="text-base font-bold tracking-tight text-foreground flex items-center gap-2.5">
+            <div className="flex size-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <BarChart2 className="size-4" />
             </div>
-            월별 완독
+            월별 완독 현황
           </h2>
           <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1.5 rounded-full">
-            완독 {finishedBooks.length}권
+            올해 총 {finishedBooks.length}권
           </span>
         </div>
-        <div className="h-64 min-h-64 w-full text-primary mt-4">
+        <p className="text-xs text-muted-foreground mb-4 font-medium">월별로 완독한 책의 권수를 확인합니다.</p>
+        <div className="h-60 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthly} margin={{ top: 20, right: 0, left: 0, bottom: 0 }}>
+            <BarChart data={monthly} margin={{ top: 22, right: 4, left: -20, bottom: 0 }} barCategoryGap="35%">
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+                tick={{ fontSize: 11, fill: "var(--muted-foreground)", fontWeight: 600 }}
                 axisLine={false}
                 tickLine={false}
-                className="font-medium"
               />
-              <Tooltip 
-                cursor={{ fill: "currentColor", opacity: 0.05 }}
-                contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.1)' }}
+              <Tooltip
+                cursor={{ fill: "var(--primary)", opacity: 0.06, radius: 6 }}
+                contentStyle={{
+                  borderRadius: '12px',
+                  border: '1px solid var(--border)',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                }}
+                formatter={(value: any) => [`${value}권`, '완독']}
               />
-              <Bar dataKey="count" fill="var(--primary)" radius={[6, 6, 0, 0]} className="opacity-90 hover:opacity-100 transition-opacity">
-                <LabelList dataKey="count" position="top" formatter={(val: any) => Number(val) > 0 ? val : ""} className="fill-foreground font-bold text-xs" />
+              <Bar dataKey="count" fill="var(--primary)" radius={[8, 8, 0, 0]} opacity={0.85}>
+                <LabelList
+                  dataKey="count"
+                  position="top"
+                  formatter={(val: any) => Number(val) > 0 ? `${val}권` : ""}
+                  style={{ fontSize: '11px', fontWeight: 700, fill: 'var(--foreground)' }}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>

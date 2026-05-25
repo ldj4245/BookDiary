@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/stats")
 public class StatsController {
 
-    private static final int YEARLY_GOAL = 24;
+    private static final int DEFAULT_YEARLY_GOAL = 24;
 
     private final CurrentUserService currentUserService;
     private final UserBookRepository userBookRepository;
@@ -55,12 +55,15 @@ public class StatsController {
         User user = currentUserService.getCurrentUser();
         List<UserBook> books = userBookRepository.findByUserId(user.getId());
         int year = Year.now().getValue();
+        int yearlyGoal = (user.getYearlyGoal() != null && user.getYearlyGoal() > 0)
+                ? user.getYearlyGoal()
+                : DEFAULT_YEARLY_GOAL;
         int finishedCount = (int) books.stream()
                 .filter(book -> book.getStatus() == ReadingStatus.FINISHED)
                 .count();
         BigDecimal progress = BigDecimal.valueOf(finishedCount)
                 .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(YEARLY_GOAL), 1, RoundingMode.HALF_UP);
+                .divide(BigDecimal.valueOf(yearlyGoal), 1, RoundingMode.HALF_UP);
         BigDecimal averageRating = books.stream()
                 .map(UserBook::getRating)
                 .filter(rating -> rating != null)
@@ -70,7 +73,7 @@ public class StatsController {
             averageRating = averageRating.divide(
                     BigDecimal.valueOf(ratingCount), 1, RoundingMode.HALF_UP);
         }
-        return new StatsSummaryDto(year, finishedCount, YEARLY_GOAL, progress, averageRating);
+        return new StatsSummaryDto(year, finishedCount, yearlyGoal, progress, averageRating);
     }
 
     @GetMapping("/monthly")
