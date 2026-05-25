@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+frontend/.next/
+frontend/out/
+
+# Java / Gradle
+backend/.gradle/
+backend/build/
+*.class
+*.jar
+!backend/gradle/wrapper/gradle-wrapper.jar
+
+# Env
+.env
+.env.local
+.env.*
+backend/.env
+frontend/.env
+frontend/.env.*
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs & Tests
+*.log
+.codex-run/
+.playwright-mcp/
+
+# AI Agent Files
+gemini.md
+claude.md
+CLAUDE.md
+AGENTS.md
+tasks/

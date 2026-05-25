@@ -1,0 +1,507 @@
+openapi: 3.0.3
+info:
+  title: BookLog API
+  version: 1.0.0
+  description: BookLog REST API (MVP)
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local backend
+
+tags:
+  - name: auth
+  - name: books
+  - name: user-books
+  - name: collections
+  - name: stats
+  - name: users
+
+paths:
+  /auth/google:
+    get:
+      tags: [auth]
+      summary: Google OAuth redirect (stub)
+  /auth/kakao:
+    get:
+      tags: [auth]
+      summary: Kakao OAuth redirect (stub)
+  /auth/refresh:
+    post:
+      tags: [auth]
+      summary: Refresh access token
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Logout and invalidate refresh token
+
+  /books/search:
+    get:
+      tags: [books]
+      summary: Search books via Kakao proxy
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [title, author, isbn]
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookSearchResult'
+
+  /books:
+    post:
+      tags: [books]
+      summary: Create book manually
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+      responses:
+        '201':
+          description: Created book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+
+  /user-books:
+    get:
+      tags: [user-books]
+      summary: List user books
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ReadingStatus'
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [recent, rating, title]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserBook'
+    post:
+      tags: [user-books]
+      summary: Add book to library
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserBookRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBook'
+
+  /user-books/{id}:
+    get:
+      tags: [user-books]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBook'
+    patch:
+      tags: [user-books]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserBookRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBook'
+
+  /user-books/{id}/notes:
+    get:
+      tags: [user-books]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PageNote'
+    post:
+      tags: [user-books]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePageNoteRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageNote'
+
+  /collections:
+    get:
+      tags: [collections]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Collection'
+    post:
+      tags: [collections]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCollectionRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+
+  /stats/summary:
+    get:
+      tags: [stats]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsSummary'
+
+  /stats/monthly:
+    get:
+      tags: [stats]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MonthlyStat'
+
+  /stats/genres:
+    get:
+      tags: [stats]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GenreStat'
+
+  /stats/heatmap:
+    get:
+      tags: [stats]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HeatmapDay'
+
+  /users/me:
+    get:
+      tags: [users]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ReadingStatus:
+      type: string
+      enum: [WANT_TO_READ, READING, FINISHED, DNF]
+
+    Visibility:
+      type: string
+      enum: [PUBLIC, FOLLOWERS, PRIVATE]
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        isbn:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        coverUrl:
+          type: string
+        pageCount:
+          type: integer
+        publisher:
+          type: string
+
+    BookSearchResult:
+      allOf:
+        - $ref: '#/components/schemas/Book'
+        - type: object
+          properties:
+            source:
+              type: string
+              enum: [kakao, manual]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nickname:
+          type: string
+        profileImageUrl:
+          type: string
+        provider:
+          type: string
+
+    UserBook:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        book:
+          $ref: '#/components/schemas/Book'
+        status:
+          $ref: '#/components/schemas/ReadingStatus'
+        currentPage:
+          type: integer
+        totalPages:
+          type: integer
+        progressPercent:
+          type: number
+          format: float
+        rating:
+          type: number
+          format: float
+        review:
+          type: string
+        oneLiner:
+          type: string
+        startedAt:
+          type: string
+          format: date
+        finishedAt:
+          type: string
+          format: date
+        tags:
+          type: array
+          items:
+            type: string
+        visibility:
+          $ref: '#/components/schemas/Visibility'
+
+    PageNote:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        pageNumber:
+          type: integer
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Collection:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        userBookIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    StatsSummary:
+      type: object
+      properties:
+        year:
+          type: integer
+        finishedCount:
+          type: integer
+        yearlyGoal:
+          type: integer
+        goalProgressPercent:
+          type: number
+        averageRating:
+          type: number
+
+    MonthlyStat:
+      type: object
+      properties:
+        month:
+          type: string
+        count:
+          type: integer
+
+    GenreStat:
+      type: object
+      properties:
+        genre:
+          type: string
+        count:
+          type: integer
+        percent:
+          type: number
+
+    HeatmapDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        count:
+          type: integer
+
+    CreateBookRequest:
+      type: object
+      required: [title, author]
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        isbn:
+          type: string
+        coverUrl:
+          type: string
+        pageCount:
+          type: integer
+
+    CreateUserBookRequest:
+      type: object
+      properties:
+        bookId:
+          type: integer
+          format: int64
+        book:
+          $ref: '#/components/schemas/CreateBookRequest'
+        status:
+          $ref: '#/components/schemas/ReadingStatus'
+
+    UpdateUserBookRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ReadingStatus'
+        currentPage:
+          type: integer
+        rating:
+          type: number
+        review:
+          type: string
+        oneLiner:
+          type: string
+        startedAt:
+          type: string
+          format: date
+        finishedAt:
+          type: string
+          format: date
+        tags:
+          type: array
+          items:
+            type: string
+
+    CreatePageNoteRequest:
+      type: object
+      required: [pageNumber, content]
+      properties:
+        pageNumber:
+          type: integer
+        content:
+          type: string
+
+    CreateCollectionRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+
+security:
+  - bearerAuth: []

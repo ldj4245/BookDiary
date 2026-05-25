@@ -1,0 +1,51 @@
+import type { BookSearchResult } from "@/types";
+
+export const mockSearchResults: BookSearchResult[] = [
+  {
+    id: 101,
+    isbn: "9788936434267",
+    title: "살인자의 기억법",
+    author: "김영하",
+    coverUrl: "https://picsum.photos/seed/book1/200/300",
+    pageCount: 280,
+    publisher: "문학동네",
+    source: "kakao",
+  },
+  {
+    id: 102,
+    isbn: "9788934986302",
+    title: "82년생 김지영",
+    author: "조남주",
+    coverUrl: "https://picsum.photos/seed/book2/200/300",
+    pageCount: 164,
+    publisher: "민음사",
+    source: "kakao",
+  },
+  {
+    id: 103,
+    isbn: "9788936438678",
+    title: "달러구트 꿈 백화점",
+    author: "이미예",
+    coverUrl: "https://picsum.photos/seed/book3/200/300",
+    pageCount: 288,
+    publisher: "팩토리나인",
+    source: "kakao",
+  },
+  {
+    id: 104,
+    isbn: "9788936439507",
+    title: "아몬드",
+    author: "손원평",
+    coverUrl: "https://picsum.photos/seed/book4/200/300",
+    pageCount: 267,
+    publisher: "창비",
+    source: "kakao",
+  },
+  {
+    id: 105,
+    title: "직접 등록한 책 (예시)",
+    author: "나",
+    pageCount: 120,
+    source: "manual",
+  },
+];
