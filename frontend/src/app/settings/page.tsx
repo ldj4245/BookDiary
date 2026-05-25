@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const [provider, setProvider] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     void getCurrentUser().then((u) => {
@@ -55,7 +56,8 @@ export default function SettingsPage() {
   };
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm("정말로 계정을 삭제하시겠습니까? 기록된 모든 데이터가 삭제되며 복구할 수 없습니다.")) {
+    if (!showDeleteConfirm) {
+      setShowDeleteConfirm(true);
       return;
     }
     
@@ -97,10 +99,6 @@ export default function SettingsPage() {
               )}
               <AvatarFallback>BL</AvatarFallback>
             </Avatar>
-            <Button variant="outline" size="sm" disabled className="gap-2" title="추후 지원 예정입니다">
-              <ImagePlus className="size-4" />
-              이미지 업로드
-            </Button>
           </div>
 
           <div className="space-y-2">
@@ -157,20 +155,42 @@ export default function SettingsPage() {
       <section className="max-w-2xl rounded-lg border border-red-200/50 bg-red-50/30 p-5">
         <div className="mb-4 flex items-center gap-2 text-sm font-medium text-red-600">
           <AlertTriangle className="size-4" />
-          위험 구역 (Danger Zone)
+          계정 관리
         </div>
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
             계정을 삭제하면 등록된 모든 독서 기록과 노트가 영구적으로 삭제되며 복구할 수 없습니다.
           </p>
-          <Button 
-            variant="destructive" 
-            size="sm" 
-            onClick={handleDeleteAccount}
-            disabled={isDeleting}
-          >
-            {isDeleting ? "처리 중..." : "계정 삭제 (회원 탈퇴)"}
-          </Button>
+          {!showDeleteConfirm ? (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+              onClick={handleDeleteAccount}
+            >
+              계정 삭제 (회원 탈퇴)
+            </Button>
+          ) : (
+            <div className="flex items-center gap-3 p-3 bg-red-100/50 rounded-lg border border-red-200">
+              <span className="text-sm font-bold text-red-600">정말로 삭제하시겠습니까?</span>
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "처리 중..." : "네, 삭제합니다"}
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+              >
+                취소
+              </Button>
+            </div>
+          )}
         </div>
       </section>
     </div>

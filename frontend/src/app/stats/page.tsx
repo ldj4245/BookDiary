@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
+  LabelList,
   Cell,
   Pie,
   PieChart,
@@ -89,15 +90,19 @@ export default function StatsPage() {
       )}
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="rounded-lg border border-border/80 bg-card p-5">
-          <h2 className="mb-5 text-sm font-medium">월별 완독 권수</h2>
+        <div className="rounded-lg border border-border/80 bg-card p-5 shadow-sm">
+          <h2 className="mb-5 text-sm font-bold flex items-center gap-2">
+            <ChartColumn className="size-4 text-primary" />
+            월별 완독 권수
+          </h2>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthly}>
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: "rgb(101 122 91 / 0.08)" }} />
-                <Bar dataKey="count" fill="var(--sage)" radius={[4, 4, 0, 0]} />
+              <BarChart data={monthly} margin={{ top: 20, right: 0, left: 0, bottom: 0 }}>
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} className="font-medium" />
+                <Tooltip cursor={{ fill: "var(--primary)", opacity: 0.08 }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                <Bar dataKey="count" fill="var(--primary)" radius={[6, 6, 0, 0]} className="opacity-90 hover:opacity-100 transition-opacity">
+                  <LabelList dataKey="count" position="top" formatter={(val: any) => Number(val) > 0 ? val : ""} className="fill-foreground font-bold text-xs" />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -135,7 +140,7 @@ export default function StatsPage() {
       </section>
 
       <section className="rounded-lg border border-border/80 bg-card p-5">
-        <h2 className="mb-5 text-sm font-medium">독서 활동</h2>
+        <h2 className="mb-5 text-sm font-medium">독서 리듬</h2>
         <ReadingHeatmap days={heatmap} />
       </section>
     </div>

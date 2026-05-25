@@ -59,6 +59,7 @@ export async function fetchApi<T>(
     ...options,
     headers,
     credentials: "include",
+    cache: "no-store",
   });
 
   if (res.status === 401 && path !== "/auth/refresh" && path !== "/auth/login") {
@@ -76,6 +77,7 @@ export async function fetchApi<T>(
           ...options,
           headers,
           credentials: "include",
+          cache: "no-store",
         });
       } else {
         clearAccessToken();

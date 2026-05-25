@@ -129,6 +129,9 @@ public class UserBookController {
         if (request.currentPage() != null) {
             ub.setCurrentPage(Math.max(0, request.currentPage()));
         }
+        if (request.totalPagesOverride() != null) {
+            ub.setTotalPagesOverride(Math.max(1, request.totalPagesOverride()));
+        }
         if (request.rating() != null) ub.setRating(request.rating());
         if (request.review() != null) ub.setReview(request.review());
         if (request.oneLiner() != null) ub.setOneLiner(request.oneLiner());

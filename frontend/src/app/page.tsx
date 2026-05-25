@@ -15,6 +15,7 @@ import {
 import {
   Bar,
   BarChart,
+  LabelList,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -329,28 +330,23 @@ function TodayDashboard() {
             완독 {finishedBooks.length}권
           </span>
         </div>
-        <div className="h-56 min-h-56 w-full text-primary">
+        <div className="h-64 min-h-64 w-full text-primary mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthly}>
+            <BarChart data={monthly} margin={{ top: 20, right: 0, left: 0, bottom: 0 }}>
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 12, fill: "currentColor" }}
+                tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
                 axisLine={false}
                 tickLine={false}
-                className="text-muted-foreground font-medium"
-              />
-              <YAxis
-                allowDecimals={false}
-                tick={{ fontSize: 12, fill: "currentColor" }}
-                axisLine={false}
-                tickLine={false}
-                className="text-muted-foreground font-medium"
+                className="font-medium"
               />
               <Tooltip 
                 cursor={{ fill: "currentColor", opacity: 0.05 }}
                 contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.1)' }}
               />
-              <Bar dataKey="count" fill="currentColor" radius={[6, 6, 0, 0]} className="opacity-80 hover:opacity-100 transition-opacity" />
+              <Bar dataKey="count" fill="var(--primary)" radius={[6, 6, 0, 0]} className="opacity-90 hover:opacity-100 transition-opacity">
+                <LabelList dataKey="count" position="top" formatter={(val: any) => Number(val) > 0 ? val : ""} className="fill-foreground font-bold text-xs" />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>

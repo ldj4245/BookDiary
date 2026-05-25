@@ -94,6 +94,7 @@ export interface CreateUserBookRequest {
 export interface UpdateUserBookRequest {
   status?: ReadingStatus;
   currentPage?: number;
+  totalPagesOverride?: number;
   rating?: number;
   review?: string;
   oneLiner?: string;

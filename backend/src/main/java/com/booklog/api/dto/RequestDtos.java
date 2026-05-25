@@ -34,6 +34,7 @@ public final class RequestDtos {
     public record UpdateUserBookRequest(
             ReadingStatus status,
             Integer currentPage,
+            Integer totalPagesOverride,
             BigDecimal rating,
             String review,
             String oneLiner,

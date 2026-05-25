@@ -5,11 +5,11 @@ import { ko } from "date-fns/locale";
 import type { HeatmapDay } from "@/types";
 
 const LEVELS = [
-  "bg-muted/60",
-  "bg-[#dfe8d8]",
-  "bg-[#bdcdb3]",
-  "bg-[#81946f]",
-  "bg-[#526a49]",
+  "bg-muted/40 border border-border/30",
+  "bg-[#9be9a8] border border-transparent shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]",
+  "bg-[#40c463] border border-transparent shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]",
+  "bg-[#30a14e] border border-transparent shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)]",
+  "bg-[#216e39] border border-transparent shadow-[inset_0_1px_2px_rgba(255,255,255,0.2)]",
 ];
 
 type Props = {
@@ -47,9 +47,9 @@ export function ReadingHeatmap({ days, compact = false }: Props) {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
       <div
-        className="inline-grid gap-[3px]"
+        className="inline-grid gap-[4px] p-2"
         style={{
           gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))`,
           gridTemplateRows: "repeat(7, minmax(0, 1fr))",
@@ -61,7 +61,7 @@ export function ReadingHeatmap({ days, compact = false }: Props) {
               return (
                 <div
                   key={`${wi}-${di}-empty`}
-                  className="size-2.5 rounded-sm sm:size-3"
+                  className="size-3 rounded-[3px] sm:size-3.5"
                 />
               );
             }
@@ -71,17 +71,17 @@ export function ReadingHeatmap({ days, compact = false }: Props) {
               <div
                 key={key}
                 title={`${format(day, "yyyy-MM-dd", { locale: ko })}: ${count}회`}
-                className={`size-2.5 rounded-sm sm:size-3 ${LEVELS[level(count)]}`}
+                className={`size-3 rounded-[3px] sm:size-3.5 transition-all duration-300 hover:scale-125 hover:z-10 cursor-default ${LEVELS[level(count)]}`}
               />
             );
           }),
         )}
       </div>
       {!compact && (
-        <div className="mt-2 flex items-center justify-end gap-1 text-xs text-muted-foreground">
+        <div className="mt-4 flex items-center justify-end gap-1.5 text-[11px] font-semibold text-muted-foreground pr-2">
           <span>적음</span>
           {LEVELS.map((c, i) => (
-            <div key={i} className={`size-3 rounded-sm ${c}`} />
+            <div key={i} className={`size-3.5 rounded-[3px] ${c}`} />
           ))}
           <span>많음</span>
         </div>

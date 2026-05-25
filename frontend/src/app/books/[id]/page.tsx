@@ -221,10 +221,10 @@ export default function BookDetailPage({
                   <span>읽은 쪽수</span>
                   <span className="text-primary">{ub.progressPercent}%</span>
                 </Label>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <Input
                     type="number"
-                    className="w-24 bg-background/50 border-border/50 rounded-lg h-9 shadow-sm text-center font-bold focus-visible:ring-primary/20"
+                    className="w-20 bg-background/50 border-border/50 rounded-lg h-9 shadow-sm text-center font-bold focus-visible:ring-primary/20"
                     value={ub.currentPage}
                     onChange={(e) =>
                       setUb({
@@ -234,9 +234,20 @@ export default function BookDetailPage({
                     }
                     onBlur={() => void patch({ currentPage: ub.currentPage })}
                   />
-                  <span className="text-sm font-medium text-muted-foreground">
-                    / {ub.totalPages}쪽
-                  </span>
+                  <span className="text-sm font-bold text-muted-foreground">/</span>
+                  <Input
+                    type="number"
+                    className="w-20 bg-background/50 border-border/50 rounded-lg h-9 shadow-sm text-center font-bold focus-visible:ring-primary/20"
+                    value={ub.totalPages}
+                    onChange={(e) =>
+                      setUb({
+                        ...ub,
+                        totalPages: parseInt(e.target.value, 10) || 1,
+                      })
+                    }
+                    onBlur={() => void patch({ totalPagesOverride: ub.totalPages })}
+                  />
+                  <span className="text-sm font-medium text-muted-foreground">쪽</span>
                 </div>
                 <Progress value={ub.progressPercent} className="h-2 bg-muted/60 mt-1" />
                 <Button
@@ -257,15 +268,42 @@ export default function BookDetailPage({
             onOpenChange={setOpenCollection} 
           />
 
-          {ub.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 animate-fade-slide-up delay-200">
+          <div className="animate-fade-slide-up delay-200 space-y-3">
+            <div className="flex flex-wrap gap-2">
               {ub.tags.map((tag) => (
-                <Badge key={tag} variant="outline" className="bg-card/60 backdrop-blur-sm border-border/50 px-3 py-1 font-medium rounded-full shadow-sm text-xs">
+                <Badge key={tag} variant="outline" className="group bg-card/60 backdrop-blur-sm border-border/50 px-3 py-1 font-medium rounded-full shadow-sm text-xs flex items-center gap-1 transition-all">
                   #{tag}
+                  <button 
+                    onClick={() => {
+                      const newTags = ub.tags.filter(t => t !== tag);
+                      setUb({ ...ub, tags: newTags });
+                      void patch({ tags: newTags });
+                    }} 
+                    className="opacity-0 group-hover:opacity-100 text-destructive/70 hover:text-destructive transition-opacity ml-0.5"
+                    title="태그 삭제"
+                  >
+                    ×
+                  </button>
                 </Badge>
               ))}
             </div>
-          )}
+            <Input
+              placeholder="새 장르/태그 추가 (Enter)"
+              className="h-8 text-xs bg-background/50 border-border/50 rounded-lg shadow-sm max-w-[200px]"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const val = e.currentTarget.value.trim();
+                  if (val && !ub.tags.includes(val)) {
+                    const newTags = [...ub.tags, val];
+                    setUb({ ...ub, tags: newTags });
+                    void patch({ tags: newTags });
+                    e.currentTarget.value = "";
+                  }
+                }
+              }}
+            />
+          </div>
 
           <div className="pt-4 border-t border-border/40 animate-fade-slide-up delay-300">
             <button
