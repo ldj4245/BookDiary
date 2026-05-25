@@ -35,7 +35,7 @@ public class CurrentUserService {
         if (request.yearlyGoal() != null) {
             user.setYearlyGoal(request.yearlyGoal());
         }
-        return user;
+        return userRepository.save(user);
     }
 
     @Transactional
