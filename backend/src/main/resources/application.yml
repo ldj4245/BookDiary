@@ -60,6 +60,8 @@ spring:
     enabled: true
 
 booklog:
+  frontend-url: ${BOOKLOG_FRONTEND_URL:http://localhost:3000}
+  backend-url: ${BOOKLOG_BACKEND_URL:http://localhost:8080}
   cors:
     allowed-origins: ${BOOKLOG_FRONTEND_URL:http://localhost:3000}
   jwt:
