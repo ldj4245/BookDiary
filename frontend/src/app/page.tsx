@@ -22,6 +22,7 @@ import {
   XAxis,
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ReadingHeatmap } from "@/components/stats/ReadingHeatmap";
 import { YearlyRing } from "@/components/stats/YearlyRing";
 import {
@@ -62,6 +63,7 @@ function TodayDashboard() {
   const [heatmap, setHeatmap] = useState<HeatmapDay[]>([]);
   const [books, setBooks] = useState<UserBook[]>([]);
   const [recentNotes, setRecentNotes] = useState<PageNote[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     void Promise.all([
@@ -79,6 +81,7 @@ function TodayDashboard() {
       if (current) {
         setRecentNotes((await listPageNotes(current.id)).slice(0, 3));
       }
+      setLoading(false);
     });
   }, []);
 
@@ -112,6 +115,110 @@ function TodayDashboard() {
         </Link>
       </header>
 
+      {loading ? <HomeSkeleton /> : <HomeContent
+        summary={summary}
+        monthly={monthly}
+        heatmap={heatmap}
+        currentBook={currentBook}
+        waitingBooks={waitingBooks}
+        finishedBooks={finishedBooks}
+        recentNotes={recentNotes}
+      />}
+    </div>
+  );
+}
+
+function HomeSkeleton() {
+  return (
+    <div className="space-y-10 pb-10">
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.75fr)]">
+        <div className="overflow-hidden rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-xl shadow-primary/5">
+          <div className="grid h-full gap-0 md:grid-cols-[220px_minmax(0,1fr)]">
+            <Skeleton className="min-h-[320px] md:min-h-full rounded-none" />
+            <div className="flex flex-col justify-between gap-8 p-6 md:p-8">
+              <div className="space-y-4">
+                <Skeleton className="h-6 w-20 rounded-full" />
+                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+              <div className="space-y-4">
+                <Skeleton className="h-2.5 w-full rounded-full" />
+                <Skeleton className="h-9 w-28 rounded-xl" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid gap-6">
+          <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-6 shadow-lg shadow-primary/5">
+            <Skeleton className="h-5 w-24 mb-6" />
+            <Skeleton className="h-32 w-32 rounded-full mx-auto" />
+          </div>
+          <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-6 shadow-lg shadow-primary/5">
+            <Skeleton className="h-5 w-20 mb-5" />
+            <div className="space-y-3">
+              <Skeleton className="h-16 w-full rounded-xl" />
+              <Skeleton className="h-16 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 독서 리듬 + 다음 책 스켈레톤 */}
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-6 shadow-lg shadow-primary/5">
+          <Skeleton className="h-5 w-24 mb-6" />
+          <Skeleton className="h-28 w-full rounded-xl" />
+        </div>
+        <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-6 shadow-lg shadow-primary/5">
+          <Skeleton className="h-5 w-20 mb-6" />
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-4 p-2">
+                <Skeleton className="h-16 w-11 rounded-md shrink-0" />
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 월별 완독 차트 스켈레톤 */}
+      <section className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-6 shadow-lg shadow-primary/5">
+        <div className="flex items-center justify-between mb-5">
+          <Skeleton className="h-6 w-36" />
+          <Skeleton className="h-6 w-16 rounded-full" />
+        </div>
+        <Skeleton className="h-3 w-48 mb-6" />
+        <div className="flex items-end gap-2 h-48 pt-4">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <Skeleton
+              key={i}
+              className="flex-1 rounded-t-lg rounded-b-none"
+              style={{ height: `${Math.random() * 60 + 15}%` }}
+            />
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function HomeContent({
+  summary, monthly, heatmap, currentBook, waitingBooks, finishedBooks, recentNotes
+}: {
+  summary: StatsSummary | null;
+  monthly: MonthlyStat[];
+  heatmap: HeatmapDay[];
+  currentBook: UserBook | undefined;
+  waitingBooks: UserBook[];
+  finishedBooks: UserBook[];
+  recentNotes: PageNote[];
+}) {
+  return (
+    <div className="space-y-10 pb-10">
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.75fr)]">
         <div className="overflow-hidden rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-xl shadow-primary/5 animate-fade-slide-up delay-100">
           {currentBook ? (
