@@ -32,6 +32,9 @@ public class User {
     @Column(name = "profile_image_url", length = 512)
     private String profileImageUrl;
 
+    @Column(name = "yearly_goal")
+    private Integer yearlyGoal;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

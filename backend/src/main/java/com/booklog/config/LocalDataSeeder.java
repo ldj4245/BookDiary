@@ -10,7 +10,7 @@ import com.booklog.domain.note.PageNote;
 import com.booklog.domain.note.PageNoteRepository;
 import com.booklog.domain.stats.ReadingActivity;
 import com.booklog.domain.stats.ReadingActivityRepository;
-import com.booklog.domain.user.CurrentUserService;
+import com.booklog.domain.user.UserRepository;
 import com.booklog.domain.user.User;
 import com.booklog.domain.userbook.UserBook;
 import com.booklog.domain.userbook.UserBookRepository;
@@ -28,7 +28,7 @@ import java.util.List;
 @Profile({"local", "dev"})
 public class LocalDataSeeder implements CommandLineRunner {
 
-    private final CurrentUserService currentUserService;
+    private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final UserBookRepository userBookRepository;
     private final PageNoteRepository pageNoteRepository;
@@ -37,7 +37,7 @@ public class LocalDataSeeder implements CommandLineRunner {
     private final ObjectMapper objectMapper;
 
     public LocalDataSeeder(
-            CurrentUserService currentUserService,
+            UserRepository userRepository,
             BookRepository bookRepository,
             UserBookRepository userBookRepository,
             PageNoteRepository pageNoteRepository,
@@ -45,7 +45,7 @@ public class LocalDataSeeder implements CommandLineRunner {
             ReadingActivityRepository activityRepository,
             ObjectMapper objectMapper
     ) {
-        this.currentUserService = currentUserService;
+        this.userRepository = userRepository;
         this.bookRepository = bookRepository;
         this.userBookRepository = userBookRepository;
         this.pageNoteRepository = pageNoteRepository;
@@ -57,7 +57,14 @@ public class LocalDataSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        User user = currentUserService.getCurrentUser();
+        User user = userRepository.findByProviderAndProviderId(com.booklog.common.enums.OAuthProvider.KAKAO, "dev-kakao-user")
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .provider(com.booklog.common.enums.OAuthProvider.KAKAO)
+                        .providerId("dev-kakao-user")
+                        .nickname("독서가")
+                        .profileImageUrl("https://api.dicebear.com/7.x/avataaars/svg?seed=booklog")
+                        .build()));
+
         if (!userBookRepository.findByUserId(user.getId()).isEmpty()) {
             return;
         }

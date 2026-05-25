@@ -20,6 +20,7 @@ export interface User {
   nickname: string;
   profileImageUrl?: string;
   provider: string;
+  yearlyGoal?: number;
 }
 
 export interface UserBook {
@@ -51,6 +52,13 @@ export interface Collection {
   name: string;
   description?: string;
   userBookIds: number[];
+}
+
+export interface CollectionDetail {
+  id: number;
+  name: string;
+  description?: string;
+  books: UserBook[];
 }
 
 export interface StatsSummary {

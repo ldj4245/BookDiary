@@ -8,7 +8,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import com.booklog.security.JwtAuthenticationFilter;
 
 import java.util.List;
 
@@ -17,9 +19,11 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CorsProperties corsProperties;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(CorsProperties corsProperties) {
+    public SecurityConfig(CorsProperties corsProperties, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.corsProperties = corsProperties;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -36,9 +40,9 @@ public class SecurityConfig {
                                 "/api/v1/auth/**",
                                 "/h2-console/**"
                         ).permitAll()
-                        // TODO: JWT 필터 연동 후 /api/v1/** authenticated 로 전환
-                        .requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();

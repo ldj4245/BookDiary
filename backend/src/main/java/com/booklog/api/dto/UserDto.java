@@ -4,6 +4,7 @@ public record UserDto(
         Long id,
         String nickname,
         String profileImageUrl,
-        String provider
+        String provider,
+        Integer yearlyGoal
 ) {
 }

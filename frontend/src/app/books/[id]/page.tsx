@@ -10,9 +10,11 @@ import {
   Quote,
   Star,
   Trash2,
+  FolderPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { InlineEditableText } from "@/components/books/InlineEditableText";
+import { AddToCollectionModal } from "@/components/collections/AddToCollectionModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +52,7 @@ export default function BookDetailPage({
   const [notes, setNotes] = useState<PageNote[]>([]);
   const [notePage, setNotePage] = useState("");
   const [noteContent, setNoteContent] = useState("");
+  const [openCollection, setOpenCollection] = useState(false);
 
   useEffect(() => {
     void Promise.all([getUserBook(bookId), listPageNotes(bookId)]).then(
@@ -102,7 +105,7 @@ export default function BookDetailPage({
   };
 
   const handleDeleteBook = async () => {
-    if (!confirm("정말 서재에서 이 책을 삭제하시겠습니까?\\n작성한 메모와 리뷰가 모두 삭제됩니다.")) return;
+    if (!confirm("정말 서재에서 이 책을 삭제하시겠습니까?\n작성한 메모와 리뷰가 모두 삭제됩니다.")) return;
     try {
       await deleteUserBook(bookId);
       toast.success("서재에서 삭제되었습니다.");
@@ -236,9 +239,23 @@ export default function BookDetailPage({
                   </span>
                 </div>
                 <Progress value={ub.progressPercent} className="h-2 bg-muted/60 mt-1" />
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 rounded-xl"
+                  onClick={() => setOpenCollection(true)}
+                >
+                  <FolderPlus className="size-4" />
+                  컬렉션 관리
+                </Button>
               </div>
             </div>
           </div>
+
+          <AddToCollectionModal 
+            userBookId={ub.id} 
+            open={openCollection} 
+            onOpenChange={setOpenCollection} 
+          />
 
           {ub.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 animate-fade-slide-up delay-200">

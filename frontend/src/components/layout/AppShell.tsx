@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { mockLogout } from "@/lib/auth";
+import { clearAccessToken } from "@/lib/auth";
+import { fetchApi } from "@/lib/api/client";
 
 const navItems = [
   { href: "/", label: "오늘", icon: Home },
@@ -30,9 +31,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleLogout = () => {
-    mockLogout();
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      await fetchApi("/auth/logout", { method: "POST" });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      clearAccessToken();
+      router.push("/login");
+    }
   };
 
   return (

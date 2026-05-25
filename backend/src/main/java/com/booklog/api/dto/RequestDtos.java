@@ -3,6 +3,7 @@ package com.booklog.api.dto;
 import com.booklog.common.enums.ReadingStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -49,8 +50,16 @@ public final class RequestDtos {
     }
 
     public record CreateCollectionRequest(
-            @NotBlank String name,
+            @NotBlank @Size(max = 64)
+            String name,
+            @Size(max = 255)
             String description
+    ) {
+    }
+
+    public record AddCollectionItemRequest(
+            @NotNull
+            Long userBookId
     ) {
     }
 }

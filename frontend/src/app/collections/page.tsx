@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { FolderOpen, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,25 +85,26 @@ export default function CollectionsPage() {
       {collections.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {collections.map((collection) => (
-            <article
-              key={collection.id}
-              className="rounded-lg border border-border/80 bg-card p-5"
-            >
-              <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-[var(--sage-soft)] text-primary">
-                <FolderOpen className="size-5" />
-              </div>
-              <h2 className="text-base font-semibold text-[var(--ink)]">
-                {collection.name}
-              </h2>
-              {collection.description && (
-                <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
-                  {collection.description}
+            <Link href={`/collections/${collection.id}`} key={collection.id}>
+              <article
+                className="group rounded-lg border border-border/80 bg-card p-5 transition-all hover:shadow-md hover:border-primary/30 cursor-pointer h-full"
+              >
+                <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-[var(--sage-soft)] text-primary transition-colors group-hover:bg-primary/20">
+                  <FolderOpen className="size-5" />
+                </div>
+                <h2 className="text-base font-semibold text-[var(--ink)] group-hover:text-primary transition-colors">
+                  {collection.name}
+                </h2>
+                {collection.description && (
+                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
+                    {collection.description}
+                  </p>
+                )}
+                <p className="mt-5 inline-flex bg-primary/10 px-2 py-1 rounded-md text-xs font-bold text-primary">
+                  {collection.userBookIds.length}권
                 </p>
-              )}
-              <p className="mt-5 text-xs text-muted-foreground">
-                {collection.userBookIds.length}권
-              </p>
-            </article>
+              </article>
+            </Link>
           ))}
         </div>
       ) : (

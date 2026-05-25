@@ -9,4 +9,8 @@ public interface CollectionItemRepository extends JpaRepository<CollectionItem, 
     List<CollectionItem> findByCollectionId(Long collectionId);
 
     List<CollectionItem> findByCollectionIdOrderBySortOrderAsc(Long collectionId);
+
+    java.util.Optional<CollectionItem> findByCollectionIdAndUserBookId(Long collectionId, Long userBookId);
+
+    void deleteByCollectionIdAndUserBookId(Long collectionId, Long userBookId);
 }

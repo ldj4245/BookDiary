@@ -1,4 +1,5 @@
 import { mockSearchResults } from "@/data/mock-books";
+import { getAccessToken, setAccessToken, clearAccessToken } from "../auth";
 import {
   mockGenreStats,
   mockHeatmapDays,
@@ -40,17 +41,52 @@ const USE_MOCK =
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1";
 
-async function fetchApi<T>(
+export async function fetchApi<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const url = `${API_BASE}${path}`;
+  const headers = new Headers(options?.headers);
+  headers.set("Content-Type", "application/json");
+
+  const token = getAccessToken();
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  let res = await fetch(url, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
+    headers,
+    credentials: "include",
   });
+
+  if (res.status === 401 && path !== "/auth/refresh" && path !== "/auth/login") {
+    try {
+      const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (refreshRes.ok) {
+        const data = await refreshRes.json();
+        setAccessToken(data.accessToken);
+
+        headers.set("Authorization", `Bearer ${data.accessToken}`);
+        res = await fetch(url, {
+          ...options,
+          headers,
+          credentials: "include",
+        });
+      } else {
+        clearAccessToken();
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
+      }
+    } catch (e) {
+      clearAccessToken();
+    }
+  }
+
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     const errorMsg = `[API Error] ${res.status} ${path} - ${text}`;
@@ -68,6 +104,22 @@ async function fetchApi<T>(
 export async function getCurrentUser(): Promise<User> {
   if (USE_MOCK) return mockUser;
   return fetchApi<User>("/users/me");
+}
+
+export async function updateUserProfile(data: { nickname?: string; yearlyGoal?: number }): Promise<User> {
+  if (USE_MOCK) {
+    if (data.nickname) mockUser.nickname = data.nickname;
+    return mockUser;
+  }
+  return fetchApi<User>("/users/me", {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteUser(): Promise<void> {
+  if (USE_MOCK) return;
+  return fetchApi<void>("/users/me", { method: "DELETE" });
 }
 
 export async function searchBooks(
@@ -187,14 +239,42 @@ export async function listCollections(): Promise<Collection[]> {
   return fetchApi<Collection[]>("/collections");
 }
 
-export async function createCollection(
-  req: CreateCollectionRequest,
-): Promise<Collection> {
-  if (USE_MOCK) return addMockCollection(req);
+export async function createCollection(data: {
+  name: string;
+  description?: string;
+}): Promise<Collection> {
+  if (USE_MOCK) {
+    const newCol: Collection = { id: Date.now(), userBookIds: [], ...data };
+    mockCollections.push(newCol);
+    return newCol;
+  }
   return fetchApi<Collection>("/collections", {
     method: "POST",
-    body: JSON.stringify(req),
+    body: JSON.stringify(data),
   });
+}
+
+export async function getCollection(id: number): Promise<CollectionDetail> {
+  if (USE_MOCK) throw new Error("Mock getCollection not implemented");
+  return fetchApi<CollectionDetail>(`/collections/${id}`);
+}
+
+export async function deleteCollection(id: number): Promise<void> {
+  if (USE_MOCK) throw new Error("Mock deleteCollection not implemented");
+  return fetchApi<void>(`/collections/${id}`, { method: "DELETE" });
+}
+
+export async function addCollectionItem(id: number, userBookId: number): Promise<void> {
+  if (USE_MOCK) throw new Error("Mock addCollectionItem not implemented");
+  return fetchApi<void>(`/collections/${id}/items`, {
+    method: "POST",
+    body: JSON.stringify({ userBookId }),
+  });
+}
+
+export async function removeCollectionItem(id: number, userBookId: number): Promise<void> {
+  if (USE_MOCK) throw new Error("Mock removeCollectionItem not implemented");
+  return fetchApi<void>(`/collections/${id}/items/${userBookId}`, { method: "DELETE" });
 }
 
 export async function getStatsSummary(): Promise<StatsSummary> {

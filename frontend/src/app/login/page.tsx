@@ -9,8 +9,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleKakaoLogin = () => {
-    mockLogin();
-    router.push("/");
+    window.location.href = "http://localhost:8080/api/v1/auth/kakao";
   };
 
   return (

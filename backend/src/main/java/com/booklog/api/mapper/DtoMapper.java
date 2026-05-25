@@ -37,7 +37,8 @@ public final class DtoMapper {
                 user.getId(),
                 user.getNickname(),
                 user.getProfileImageUrl(),
-                user.getProvider().name().toLowerCase()
+                user.getProvider().name().toLowerCase(),
+                user.getYearlyGoal()
         );
     }
 
