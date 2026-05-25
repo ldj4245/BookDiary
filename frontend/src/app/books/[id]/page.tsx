@@ -322,24 +322,29 @@ export default function BookDetailPage({
               페이지 메모
             </div>
             
-            <div className="grid gap-3 md:grid-cols-[100px_minmax(0,1fr)_auto] p-4 rounded-xl border border-border/40 bg-muted/20">
-              <Input
-                type="number"
-                min="0"
-                placeholder="쪽수"
-                className="bg-background/80 border-border/50 shadow-sm rounded-lg font-bold focus-visible:ring-primary/20"
-                value={notePage}
-                onChange={(e) => setNotePage(e.target.value)}
-              />
+            <div className="flex flex-col gap-3 p-4 rounded-xl border border-border/40 bg-muted/20">
+              <div className="flex items-center">
+                <Input
+                  type="number"
+                  min="0"
+                  placeholder="쪽수"
+                  className="w-24 bg-background/80 border-border/50 shadow-sm rounded-lg font-bold focus-visible:ring-primary/20 h-9"
+                  value={notePage}
+                  onChange={(e) => setNotePage(e.target.value)}
+                />
+                <span className="ml-2 text-sm font-medium text-muted-foreground">쪽</span>
+              </div>
               <Textarea
                 placeholder="인상 깊은 문장이나 생각을 남겨주세요."
-                className="min-h-[80px] bg-background/80 border-border/50 shadow-sm rounded-lg resize-none text-[15px] leading-relaxed focus-visible:ring-primary/20 font-medium"
+                className="min-h-[100px] bg-background/80 border-border/50 shadow-sm rounded-lg resize-none text-[15px] leading-relaxed focus-visible:ring-primary/20 font-medium"
                 value={noteContent}
                 onChange={(e) => setNoteContent(e.target.value)}
               />
-              <Button onClick={() => void handleAddNote()} className="h-full rounded-lg shadow-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[0.98] transition-all">
-                저장
-              </Button>
+              <div className="flex justify-end">
+                <Button onClick={() => void handleAddNote()} className="rounded-lg shadow-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[0.98] transition-all px-6 h-9">
+                  저장
+                </Button>
+              </div>
             </div>
 
             <ul className="mt-8 space-y-4">
