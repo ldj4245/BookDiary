@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { setAccessToken } from "@/lib/auth";
 
-export default function KakaoCallbackPage() {
+function KakaoCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -21,11 +21,24 @@ export default function KakaoCallbackPage() {
   }, [router, searchParams]);
 
   return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <p className="text-muted-foreground animate-pulse font-medium">카카오 로그인 처리 중...</p>
+    </div>
+  );
+}
+
+export default function KakaoCallbackPage() {
+  return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        <p className="text-muted-foreground animate-pulse font-medium">카카오 로그인 처리 중...</p>
-      </div>
+      <Suspense fallback={
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-muted-foreground animate-pulse font-medium">로딩 중...</p>
+        </div>
+      }>
+        <KakaoCallbackContent />
+      </Suspense>
     </div>
   );
 }

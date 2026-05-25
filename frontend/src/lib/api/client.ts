@@ -20,6 +20,7 @@ import {
 import type {
   BookSearchResult,
   Collection,
+  CollectionDetail,
   CreateCollectionRequest,
   CreatePageNoteRequest,
   CreateUserBookRequest,
@@ -243,11 +244,7 @@ export async function createCollection(data: {
   name: string;
   description?: string;
 }): Promise<Collection> {
-  if (USE_MOCK) {
-    const newCol: Collection = { id: Date.now(), userBookIds: [], ...data };
-    mockCollections.push(newCol);
-    return newCol;
-  }
+  if (USE_MOCK) throw new Error("Mock createCollection not implemented");
   return fetchApi<Collection>("/collections", {
     method: "POST",
     body: JSON.stringify(data),
