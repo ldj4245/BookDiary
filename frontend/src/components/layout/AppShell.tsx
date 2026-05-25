@@ -89,7 +89,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col pb-16 md:pb-0">
         <header className="flex items-center justify-between border-b border-border/40 bg-card/60 backdrop-blur-xl px-4 py-3 md:hidden sticky top-0 z-50">
           <Link href="/" className="font-bold flex items-center gap-2">
             <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
@@ -97,26 +97,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             BookLog
           </Link>
-          <nav className="flex gap-2 overflow-x-auto text-xs pb-1 scrollbar-none">
-            {navItems.slice(0, 4).map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  "whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition-all",
-                  pathname === href || pathname.startsWith(href + "/")
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "bg-muted/50 text-muted-foreground",
-                )}
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-xs h-8 text-muted-foreground hover:text-destructive">
+            <LogOut className="size-3 mr-1" />
+            로그아웃
+          </Button>
         </header>
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 md:px-8 lg:py-10 animate-fade-slide-up">
           {children}
         </main>
+
+        {/* Mobile Bottom Navigation */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t border-border/40 bg-background/95 backdrop-blur-xl z-50 flex items-center justify-around pb-safe">
+          {navItems.map(({ href, label, icon: Icon }) => {
+            const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 w-full py-2 transition-colors",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className={cn("size-5", active && "fill-primary/10")} />
+                <span className="text-[10px] font-medium">{label}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </div>
     </div>
   );
