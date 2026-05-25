@@ -8,6 +8,7 @@ import com.booklog.security.JwtProvider;
 import com.booklog.service.KakaoOAuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,12 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
+    @Value("${booklog.backend-url:http://localhost:8080}")
+    private String backendUrl;
+
+    @Value("${booklog.frontend-url:http://localhost:3000}")
+    private String frontendUrl;
+
     public AuthController(KakaoOAuthService kakaoOAuthService, KakaoProperties kakaoProperties, UserRepository userRepository, JwtProvider jwtProvider) {
         this.kakaoOAuthService = kakaoOAuthService;
         this.kakaoProperties = kakaoProperties;
@@ -35,14 +42,14 @@ public class AuthController {
 
     @GetMapping("/kakao")
     public void kakaoRedirect(HttpServletResponse response) throws IOException {
-        String redirectUri = "http://localhost:8080/api/v1/auth/kakao/callback";
+        String redirectUri = backendUrl + "/api/v1/auth/kakao/callback";
         String url = "https://kauth.kakao.com/oauth/authorize?client_id=" + kakaoProperties.restApiKey() + "&redirect_uri=" + redirectUri + "&response_type=code";
         response.sendRedirect(url);
     }
 
     @GetMapping("/kakao/callback")
     public void kakaoCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
-        String redirectUri = "http://localhost:8080/api/v1/auth/kakao/callback";
+        String redirectUri = backendUrl + "/api/v1/auth/kakao/callback";
         String kakaoAccessToken = kakaoOAuthService.getAccessToken(code, redirectUri);
         KakaoOAuthService.KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(kakaoAccessToken);
 
@@ -64,7 +71,7 @@ public class AuthController {
         response.addCookie(refreshCookie);
 
         // Redirect to frontend with access token in hash (or query param)
-        response.sendRedirect("http://localhost:3000/login/oauth2/callback/kakao?token=" + accessToken);
+        response.sendRedirect(frontendUrl + "/login/oauth2/callback/kakao?token=" + accessToken);
     }
 
     @PostMapping("/refresh")
