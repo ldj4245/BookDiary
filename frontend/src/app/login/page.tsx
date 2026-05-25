@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { BookMarked, MessageCircle, Library, PenLine, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { mockLogin } from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
