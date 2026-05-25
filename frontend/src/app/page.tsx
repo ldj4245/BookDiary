@@ -100,7 +100,7 @@ function TodayDashboard() {
             오늘의 독서
           </h1>
           <p className="mt-2 text-sm text-muted-foreground font-medium">
-            다시 펼칠 책과 남겨둔 생각을 한곳에 모았습니다.
+            책과 함께한 오늘을 기록해보세요.
           </p>
         </div>
         <Link

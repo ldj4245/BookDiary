@@ -52,12 +52,12 @@ export default function LoginPage() {
 
             <div className="space-y-6">
               <h1 className="text-5xl sm:text-6xl lg:text-[4rem] font-bold tracking-tighter text-foreground leading-[1.1]">
-                읽던 책을 <br />
-                <span className="text-primary">이어 기록</span>하세요.
+                오늘 읽은 한 페이지, <br />
+                <span className="text-primary">잊기 전</span>에 남겨두세요.
               </h1>
               <p className="max-w-[28rem] text-lg text-muted-foreground leading-relaxed font-medium">
-                쪽수, 메모, 완독 기록을 가볍게 남깁니다.<br />
-                온전히 나만을 위한 독서 기록장으로 시작해 보세요.
+                쪽수, 메모, 완독 기록을 가볍게 남길 수 있어요.<br />
+                오로지 나만을 위한 독서 기록장으로 시작해 보세요.
               </p>
             </div>
 
