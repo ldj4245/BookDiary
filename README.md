@@ -2,6 +2,10 @@
 
 개인 독서 기록 서비스 모노레포입니다. 현재는 Next.js 프론트엔드와 Spring Boot 백엔드를 실제 API로 연결해 개발하는 단계입니다.
 
+## 데모 사이트
+
+- https://book-diary-qvfi.vercel.app/
+
 ## 구조
 
 ```text
